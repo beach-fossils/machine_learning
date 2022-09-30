@@ -3,8 +3,23 @@
 # features = lista de strings com os nomes das features
 # label = string com o nome da label
 
+import numpy as np
+import pandas as pd
+
+
 class Dataset:
-    def __init__(self, x, y, features, label):
+    """A class to represent a dataset.
+    """
+
+    def __init__(self, x, y=None, features=None, label=None):
+        """Initializes the dataset.
+        Args:
+            x: A numpy array of shape (n_samples, n_features).
+            y: A numpy array of shape (n_samples, 1).
+            features: A list of strings with the names of the features.
+            label: A string with the name of the label.
+            """
+
         self.x = x
         self.y = y
         self.features = features
@@ -48,7 +63,7 @@ class Dataset:
 
     def summary(self):
         """Returns a summary of the dataset."""
-        #pandas dataframe colum names are features and row mean, median, min, max, variance
+        # pandas dataframe colum names are features and row mean, median, min, max, variance
         df = pd.DataFrame(columns=self.features)
         df.loc['mean'] = self.get_mean()
         df.loc['median'] = self.get_median()
@@ -57,11 +72,26 @@ class Dataset:
         df.loc['variance'] = self.get_variance()
         return df
 
+    def dropna(self):
+        """Removes all the samples with missing values (NaN)."""
+
+        self.x = self.x[~np.isnan(self.x).any(axis=1)]  # ~ means not and any(axis=1) means any row
+
+        # update y if it exists
+        if self.has_labels():
+            self.y = self.y[~np.isnan(self.x).any(axis=1)]
+
+    def fillna(self, value):
+        """Fills all the missing values (NaN) with a given value."""
+
+        self.x = np.nan_to_num(self.x, nan=value)
+
+        # update y if it exists
+        if self.has_labels():
+            self.y = np.nan_to_num(self.y, nan=value)
 
 
 # testing
-import numpy as np
-import pandas as pd
 
 if __name__ == '__main__':
     x = np.array([[1, 2, 3], [4, 5, 6]])
