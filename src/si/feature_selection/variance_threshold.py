@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from si.data import dataset
+from si.data.dataset import Dataset
 
 
 class VarianceThreshold:
@@ -19,7 +20,7 @@ class VarianceThreshold:
         features = np.array(dataset.features)[mask]
         return x, features
 
-    def fit_transform(self, x):
+    def fit_transform(self, x: Dataset):
         self.fit(x)
         return self.tranform(x)
 
