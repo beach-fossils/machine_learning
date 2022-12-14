@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def rmse(y_true, y_pred) -> error:
+def rmse(y_true, y_pred):
     """Computes the root mean squared error between the real and predicted values.
     Args:
         y_true: real values of y
