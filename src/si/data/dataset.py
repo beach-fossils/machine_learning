@@ -11,23 +11,23 @@ class Dataset:
     """A class to represent a dataset.
     """
 
-    def __init__(self, x, y=None, features=None, label=None):
+    def __init__(self, X, y=None, features=None, label=None):
         """Initializes the dataset.
         Args:
-            x: A numpy array of shape (n_samples, n_features).
+            X: A numpy array of shape (n_samples, n_features).
             y: A numpy array of shape (n_samples, 1).
             features: A list of strings with the names of the features.
             label: A string with the name of the label.
             """
 
-        self.x = x
+        self.X = X
         self.y = y
         self.features = features
         self.label = label
 
     def shape(self):
         """Returns the shape of the dataset."""
-        return self.x.shape
+        return self.X.shape
 
     def has_labels(self):
         """Returns True if the dataset has labels.
@@ -43,23 +43,23 @@ class Dataset:
 
     def get_mean(self):
         """Returns the mean of the dataset."""
-        return np.mean(self.x, axis=0)
+        return np.mean(self.X, axis=0)
 
     def get_variance(self):
         """Returns the variance of the dataset."""
-        return np.var(self.x, axis=0)
+        return np.var(self.X, axis=0)
 
     def get_median(self):
         """Returns the median of the dataset."""
-        return np.median(self.x, axis=0)
+        return np.median(self.X, axis=0)
 
     def get_min(self):
         """Returns the minimum of the dataset."""
-        return np.min(self.x, axis=0)
+        return np.min(self.X, axis=0)
 
     def get_max(self):
         """Returns the maximum of the dataset."""
-        return np.max(self.x, axis=0)
+        return np.max(self.X, axis=0)
 
     def summary(self):
         """Returns a summary of the dataset."""
@@ -75,16 +75,16 @@ class Dataset:
     def dropna(self):
         """Removes all the samples with missing values (NaN)."""
 
-        self.x = self.x[~np.isnan(self.x).any(axis=1)]  # ~ means not and any(axis=1) means any row
+        self.X = self.X[~np.isnan(self.X).any(axis=1)]  # ~ means not and any(axis=1) means any row
 
         # update y if it exists
         if self.has_labels():
-            self.y = self.y[~np.isnan(self.x).any(axis=1)]
+            self.y = self.y[~np.isnan(self.X).any(axis=1)]
 
     def fillna(self, value):
         """Fills all the missing values (NaN) with a given value."""
 
-        self.x = np.nan_to_num(self.x, nan=value)
+        self.X = np.nan_to_num(self.X, nan=value)
 
         # update y if it exists
         if self.has_labels():
