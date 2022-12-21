@@ -20,10 +20,10 @@ class Dataset:
             label: A string with the name of the label.
             """
 
-        self.X = X
-        self.y = y
-        self.features = features
-        self.label = label
+        self.X = X  # variáveis independentes, matriz de features
+        self.y = y  # variável dependente
+        self.features = features  # vetor com nomes das features
+        self.label = label  # nome da label
 
     def shape(self):
         """Returns the shape of the dataset."""
@@ -32,14 +32,13 @@ class Dataset:
     def has_labels(self):
         """Returns True if the dataset has labels.
         if true, the dataset is a supervised dataset."""
-        return self.y is not None
+        return self.y is not None  # se y for None, retorna False
 
     def get_classes(self):
         """Possible values in y; returns the classes of the dataset."""
-        if self.has_labels():
-            return np.unique(self.y)
-        else:
-            return 'No labels'
+        if self.y is None:
+            raise ValueError('Dataset has no labels')
+        return np.unique(self.y)
 
     def get_mean(self):
         """Returns the mean of the dataset."""
@@ -75,11 +74,9 @@ class Dataset:
     def dropna(self):
         """Removes all the samples with missing values (NaN)."""
 
-        self.X = self.X[~np.isnan(self.X).any(axis=1)]  # ~ means not and any(axis=1) means any row
-
-        # update y if it exists
-        if self.has_labels():
-            self.y = self.y[~np.isnan(self.X).any(axis=1)]
+        mask = np.isnan(self.X).any(axis=1)  # retorna um vetor de booleanos com True se houver NaN na linha
+        self.X = self.X[~mask]  # inverte a mascara para manter os valores que nao sao NaN e assim ficamos com os
+        # valores que nao sao NaN
 
     def fillna(self, value):
         """Fills all the missing values (NaN) with a given value."""
@@ -94,13 +91,4 @@ class Dataset:
 # testing
 
 if __name__ == '__main__':
-    x = np.array([[1, 2, 3], [4, 5, 6]])
-    y = np.array([1, 2])
-    features = ['a', 'b', 'c']
-    label = 'y'
-    dataset = Dataset(x, y, features, label)
-    print(dataset.shape())
-    print(dataset.has_labels())
-    print(dataset.get_classes())
-    print(dataset.get_mean())
-    print(dataset.summary())
+    pass
