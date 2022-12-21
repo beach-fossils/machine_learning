@@ -8,21 +8,31 @@ from si.data.dataset import Dataset
 class VarianceThreshold:
     def __init__(self, threshold=0.0):
         self.threshold = threshold
-        self.variance = None
+        self.variance = None  # parametro estimado
 
-    def fit(self, x):
-        self.variance = np.var(x, axis=0)
+    def fit(self, dataset: Dataset):
+        """Estimate the variance for each feature"""
+        # recebe o X do Dataset
+        self.variance = np.var(dataset.X, axis=0)
         return self
 
-    def tranform(self, x):
-        mask = self.variance > self.threshold  # mask is a boolean array
-        x = x[:, mask]
-        features = np.array(dataset.features)[mask]
-        return x, features
+    def tranform(self, dataset: Dataset) -> Dataset:
+        """ It removes all features whose variance does not meet the threshold."""
 
-    def fit_transform(self, x: Dataset):
-        self.fit(x)
-        return self.tranform(x)
+        # retorna um vetor booleano com True para as features que passam no threshold
+        mask = self.variance > self.threshold
+
+        X = dataset.X[:, mask]  # retorna um novo Dataset com as features que passaram no threshold
+
+        features = np.array(dataset.features)[mask]  # retorna um vetor com os nomes das features que passaram no
+        # threshold
+
+        return Dataset(X, dataset.y, features=list(features), label=dataset.label)
+
+    def fit_transform(self, dataset: Dataset):
+        """Estimate the variance for each feature and remove all features whose variance does not meet the threshold."""
+        self.fit(dataset)
+        return self.tranform(dataset)
 
 
 if __name__ == '__main__':
@@ -37,4 +47,4 @@ if __name__ == '__main__':
 
     # testing fit method
     vt = VarianceThreshold()
-    print(vt.fit_transform(x))
+    print(vt.fit_transform(dataset))
