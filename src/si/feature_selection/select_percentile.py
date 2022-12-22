@@ -22,6 +22,9 @@ class SelectPercentile:
 
         # saber quais são as features que passam no threshold do percentil atrvés dos valores de F e ids
         idxs = np.argsort(self.F)  # retorna os indices das features em ordem crescente de F
+        n_features = int(len(idxs) * self.percentile)  # número de features a selecionar
+        idxs = idxs[-n_features:]  # seleciona as features com os maiores valores de F de acordo com o percentil, o - é
+        # para inverter a ordem pois o argsort retorna em ordem crescente
 
         features = np.array(dataset.features)[idxs]  # retorna um vetor com os nomes das features em ordem crescente de
         # F
