@@ -1,10 +1,11 @@
 from typing import Union, Callable
 import numpy as np
 from si.data.dataset import Dataset
+from si.statistics.euclidean_distance import euclidean_distance
 
 
 class KNNClassifier:
-    def __init__(self, k, distance):
+    def __init__(self, k, distance: Callable = euclidean_distance):
         self.k = k  # number of neighbors to consider (numero de k exemplos)
         self.distance = distance  # distance function to be used (calcula a distancia entre amostra e as amostras do
         # dataset de treino)
@@ -29,13 +30,16 @@ class KNNClassifier:
         indexes = np.argsort(distances)[:self.k]
 
         # using indexes, get the labels of the k closest neighbors
-        labels = self.dataset.y[indexes]
+        knn_labels = self.dataset.y[indexes]
 
-        # get the most frequent label
-        label, _ = np.unique(labels,
-                             return_counts=True)  # retorna os valores únicos (label) e a quantidade de vezes que
-        # cada valor aparece (_) (return_counts=True)
-        return label[np.argmax(_)]  # argmax returns the index of the maximum value in the array
+        labels, counts = np.unique(knn_labels, return_counts=True)  # np.unique retorna os valores únicos de um array e
+    # np.bincount conta o número de vezes que cada valor aparece no array
+
+        # get the index of the most frequent label
+        maxfrequency = labels[np.argmax(counts)]  # np.argmax retorna o índice do maior valor de um array
+
+        return maxfrequency
+
 
     def score(self, dataset):
         """Computes the accuracy between the real and predicted values."""
@@ -49,6 +53,33 @@ class KNNClassifier:
 if __name__ == '__main__':
     from si.data.dataset import Dataset
     from si.model_selection.split import train_test_split
+    from si.io.CSV import read_csv
 
-# a ser testado ainda!!!
+    # load the dataset
+    iris_dataset = read_csv('/Users/josediogomoura/machine_learning/datasets/datasets/iris.csv', sep=',', features=True,
+                            label=True)
+
+    # split the dataset into train and test
+    train, test = train_test_split(iris_dataset, test_size=0.2)
+
+    # create the model
+    knn = KNNClassifier(k=3)
+
+    # train the model
+    knn.fit(train)
+
+    # predict the test dataset
+    y_pred = knn.predict(test)
+
+    # compute the accuracy
+    accuracy = knn.score(test)
+
+    print(f'Accuracy: {accuracy}')
+
+
+
+
+
+
+
 
