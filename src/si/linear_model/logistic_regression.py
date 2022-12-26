@@ -28,26 +28,61 @@ class LogisticRegression:
         # initialize the cost history
         self.cost_history = {}
 
-        # gradient descent
+        # gradient descent, colocar para que o valor da função de custo (J/self.cost) não se altera
         for i in range(self.max_iter):
-            # predicted y
-            y_pred = np.dot(dataset.X, self.theta) + self.theta_zero
+            # calculates the predictions using the sigmoid function
+            y_pred = sigmoid_function(np.dot(dataset.X, self.theta) + self.theta_zero)
 
-            # apply sigmoid function
-            y_pred = sigmoid_function(y_pred)
+            # calculates the gradient
+            gradient = (1 / m) * np.dot(dataset.X.T, y_pred - dataset.y)
+            gradient_zero = (1 / m) * np.sum(y_pred - dataset.y)
 
-            # compute the gradient using the learning rate
-            gradient = (self.alpha * (1 / m)) * np.dot(y_pred - dataset.y, dataset.X)
+            # calculates the regularization term
+            regularization = (self.l2_penalty / m) * self.theta
 
-            # compute the penalty
-            penalization_term = self.alpha * (self.l2_penalty / m) * self.theta
+            # updates the parameters
+            self.theta = self.theta - self.alpha * (gradient + regularization)
+            self.theta_zero = self.theta_zero - self.alpha * gradient_zero
 
-            # update the model parameters
-            self.theta = self.theta - gradient - penalization_term
-            self.theta_zero = self.theta_zero - (self.alpha * (1 / m)) * np.sum(y_pred - dataset.y)
+            # calculates the cost function
+            cost = self.cost_function(dataset)
 
-            # compute the cost function
-            self.cost_history[i] = self.cost_function(dataset)
+            # updates the cost history
+            self.cost_history[i] = cost
+
+            # prints the cost function
+            print(f"Cost: {cost} at iteration {i}")
+
+           # cost_history(i - 1) – cost_history(i) < 0.0001 : parar o algoritmo
+
+            if i > 0:
+                if self.cost_history[i - 1] - self.cost_history[i] < 0.0001:
+                    break
+
+        # plots the cost function history
+        self.cost_function_plot()
+
+
+
+        # for i in range(self.max_iter):
+        #     # predicted y
+        #     y_pred = np.dot(dataset.X, self.theta) + self.theta_zero
+        #
+        #     # apply sigmoid function
+        #     y_pred = sigmoid_function(y_pred)
+        #
+        #     # compute the gradient using the learning rate
+        #     gradient = (self.alpha * (1 / m)) * np.dot(y_pred - dataset.y, dataset.X)
+        #
+        #     # compute the penalty
+        #     penalization_term = self.alpha * (self.l2_penalty / m) * self.theta
+        #
+        #     # update the model parameters
+        #     self.theta = self.theta - gradient - penalization_term
+        #     self.theta_zero = self.theta_zero - (self.alpha * (1 / m)) * np.sum(y_pred - dataset.y)
+        #
+        #     # compute the cost function
+        #     self.cost_history[i] = self.cost_function(dataset)
 
         return self
 

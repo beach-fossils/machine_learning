@@ -91,6 +91,16 @@ class RidgeRegression:
             # compute the cost function
             self.cost_history[i] = self.cost(dataset)
 
+            # print the cost function for every iteration
+            print(f"Iteration {i}: {self.cost_history[i]}")
+
+            # cost_history(i - 1) – cost_history(i) < 1
+            if i > 0 and self.cost_history[i - 1] - self.cost_history[i] < 1:
+                break
+
+        # plot the cost function history
+        self.cost_function_plot()
+
         return self
 
     def predict(self, dataset: Dataset) -> np.array:
