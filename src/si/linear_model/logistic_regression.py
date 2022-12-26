@@ -2,6 +2,7 @@ from si.data import dataset
 from src.si.statistics.sigmoid_function import sigmoid_function
 import numpy as np
 from src.si.data.dataset import Dataset
+from matplotlib import pyplot as plt
 
 
 class LogisticRegression:
@@ -10,27 +11,43 @@ class LogisticRegression:
         self.alpha = alpha  # taxa de aprendizagem
         self.max_iter = max_iter  # número máximo de iterações
 
-        self.theta = None  # vetor de pesos, parametros do modelo para as variáveis de entrada
-        # The intercept of the model.
-        self.theta_zero = None  # coeficiente/parametro zero. Interserção
+        self.theta = None  # parâmetro theta
+        self.theta_zero = None  # parâmetro theta_zero
+        self.cost_history = None
 
     def fit(self, dataset: Dataset):
         """Estimates the the theta and theta_zero parameters of the model using the dataset."""
         # similar to ridge_regression but uses sigmoid function
 
-        m, n = dataset.shape()  # m = number of samples, n = number of features
+        m, n = dataset.shape()
+
+        # initialize the model parameters
+        self.theta = np.zeros(n)
+        self.theta_zero = 0
+
+        # initialize the cost history
+        self.cost_history = {}
+
         # gradient descent
         for i in range(self.max_iter):
-            # predict y using sigmoid function
-            y_pred = sigmoid_function(np.dot(dataset.X, self.theta) + self.theta_zero)
+            # predicted y
+            y_pred = np.dot(dataset.X, self.theta) + self.theta_zero
 
-            # calculate gradients
-            gradient_theta = (1 / m) * np.dot(dataset.X.T, (y_pred - dataset.y)) + (self.l2_penalty / m) * self.theta
-            gradient_theta_zero = (1 / m) * np.sum(y_pred - dataset.y)  # gradient of theta_zero is not regularized
+            # apply sigmoid function
+            y_pred = sigmoid_function(y_pred)
 
-            # update parameters theta and theta_zero using the gradients
-            self.theta = self.theta - self.alpha * gradient_theta
-            self.theta_zero = self.theta_zero - self.alpha * gradient_theta_zero
+            # compute the gradient using the learning rate
+            gradient = (self.alpha * (1 / m)) * np.dot(y_pred - dataset.y, dataset.X)
+
+            # compute the penalty
+            penalization_term = self.alpha * (self.l2_penalty / m) * self.theta
+
+            # update the model parameters
+            self.theta = self.theta - gradient - penalization_term
+            self.theta_zero = self.theta_zero - (self.alpha * (1 / m)) * np.sum(y_pred - dataset.y)
+
+            # compute the cost function
+            self.cost_history[i] = self.cost_function(dataset)
 
         return self
 
@@ -53,7 +70,7 @@ class LogisticRegression:
         # calculates accuracy between predictions and dataset.y
         return np.sum(predictions == dataset.y) / len(dataset.y)
 
-    def cost(self, dataset):
+    def cost_function(self, dataset):
         """Calculates the cost function between the predicted values and the actual values."""
         # calculates the cost function
 
@@ -67,3 +84,9 @@ class LogisticRegression:
         cost = cost + (self.l2_penalty / (2 * m)) * np.sum(self.theta ** 2)  # regularization term
         return cost
 
+    def cost_function_plot(self):
+        """Plots the cost function history."""
+        plt.plot(self.cost_history.keys(), self.cost_history.values())
+        plt.xlabel("Iteration")
+        plt.ylabel("Cost")
+        plt.show()

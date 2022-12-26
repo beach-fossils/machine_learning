@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib import pyplot as plt
 
 from si.data.dataset import Dataset
 from si.metrics.mse import mse
@@ -26,6 +27,8 @@ class RidgeRegression:
     theta_zero: float
         The model parameter, namely the intercept of the linear model.
         For example, theta_zero * 1
+    cost_history: dict
+        The cost function history for each iteration
     """
 
     def __init__(self, l2_penalty: float = 1, alpha: float = 0.001, max_iter: int = 1000):
@@ -48,6 +51,7 @@ class RidgeRegression:
         # attributes
         self.theta = None  # coeficientes/parametros do modelo para as variáveis de entrada (features)
         self.theta_zero = None  # coeficiente/parametro zero. também conhhecido como interseção
+        self.cost_history = None
 
     def fit(self, dataset: Dataset):
         """
@@ -69,22 +73,25 @@ class RidgeRegression:
         self.theta = np.zeros(n)
         self.theta_zero = 0
 
-        # vetor de predições
-        y_pred = np.dot(dataset.X, self.theta) + self.theta_zero  # typical function y = mx + b
+        # cost history iniciar
+        self.cost_history = {}
 
-        # compute and update the gradient with learning rate
-        gradient = self.alpha
-        self.theta = self.theta - self.alpha * gradient
+        # gradient descent
+        for i in range(self.max_iter):
+            y_pred = self.predict(dataset)
 
-        # calculate the penalty
-        penalty = self.alpha * (self.l2_penalty / m) * self.theta
+            # compute the gradients
+            d_theta = (np.dot(dataset.X.T, (y_pred - dataset.y)) + (self.l2_penalty * self.theta)) / m
+            d_theta_zero = np.sum(y_pred - dataset.y) / m
 
-        # update the parameters
-        self.theta = self.theta = self.theta - gradient - penalty
-        self.theta_zero = self.theta_zero - self.alpha * (1 / m) * np.sum(y_pred - dataset.y)
+            # update the parameters
+            self.theta = self.theta - (self.alpha * d_theta)
+            self.theta_zero = self.theta_zero - (self.alpha * d_theta_zero)
 
-        # cost history
-        cost_history = np.zeros(self.max_iter)  # vetor de custo
+            # compute the cost function
+            self.cost_history[i] = self.cost(dataset)
+
+        return self
 
     def predict(self, dataset: Dataset) -> np.array:
         """
@@ -134,7 +141,17 @@ class RidgeRegression:
             The cost function of the model
         """
         y_pred = self.predict(dataset)
+
         return (np.sum((y_pred - dataset.y) ** 2) + (self.l2_penalty * np.sum(self.theta ** 2))) / (2 * len(dataset.y))
+
+    def cost_function_plot(self):
+        """
+        Plot the cost function history
+        """
+        plt.plot(list(self.cost_history.keys()), list(self.cost_history.values()))
+        plt.xlabel("Iteration")
+        plt.ylabel("Cost")
+        plt.show()
 
 
 if __name__ == '__main__':
