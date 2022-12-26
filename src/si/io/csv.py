@@ -13,28 +13,26 @@ def read_csv(filename, sep=',', features=False, label=False):
     returns:
     A Dataset object."""
 
-    if features and label:
+    if features:
         df = pd.read_csv(filename, sep=sep)
-        x = df.iloc[:, :-1].values
-        y = df.iloc[:, -1].values
-        features = df.columns[:-1].values
+        features = df.columns[:-1]
         label = df.columns[-1]
-        return Dataset(x, y, features, label)
-    elif features:
-        df = pd.read_csv(filename, sep=sep)
-        x = df.iloc[:, :].values
-        features = df.columns[:].values
-        return Dataset(x, features=features)
+        X = df[features].values
+        y = df[label].values
+        return Dataset(X, y, features, label)
     elif label:
         df = pd.read_csv(filename, sep=sep)
-        x = df.iloc[:, :-1].values
-        y = df.iloc[:, -1].values
         label = df.columns[-1]
-        return Dataset(x, y, label=label)
+        X = df.values
+        y = df[label].values
+        features = None
+        return Dataset(X, y, features=None, label=label)
     else:
         df = pd.read_csv(filename, sep=sep)
-        x = df.iloc[:, :].values
-        return Dataset(x)
+        X = df.values
+        y = None
+        label_name = None
+        return Dataset(X, y, label=label_name)
 
 
 def write_csv(dataset, filename, sep=',', features=False, label=False):
@@ -49,26 +47,26 @@ def write_csv(dataset, filename, sep=',', features=False, label=False):
     A Dataset object."""
 
     if features and label:
-        df = pd.DataFrame(dataset.x, columns=dataset.features)
+        df = pd.DataFrame(dataset.X, columns=dataset.features)
         df[dataset.label] = dataset.y
         df.to_csv(filename, sep=sep, index=False)
     elif features:
-        df = pd.DataFrame(dataset.x, columns=dataset.features)
+        df = pd.DataFrame(dataset.X, columns=dataset.features)
         df.to_csv(filename, sep=sep, index=False)
     elif label:
-        df = pd.DataFrame(dataset.x)
+        df = pd.DataFrame(dataset.X)
         df[dataset.label] = dataset.y
         df.to_csv(filename, sep=sep, index=False)
     else:
-        df = pd.DataFrame(dataset.x)
+        df = pd.DataFrame(dataset.X)
         df.to_csv(filename, sep=sep, index=False)
 
 
 if __name__ == '__main__':
     # Test the function read_csv
-    dataset = read_csv('/Users/josediogomoura/machine_learning/datasets/datasets/iris.csv', features=True, label=True)
+    dataset = read_csv('/Users/josediogomoura/machine_learning/datasets/datasets/iris.csv', sep=',', features=True,
+                       label=True)
     print(dataset.summary())
 
     # Test the function write_csv
-    write_csv(dataset, '/Users/josediogomoura/machine_learning/datasets/datasets/iris2.csv', features=True, label=True)
-
+    # write_csv(dataset, '/Users/josediogomoura/machine_learning/datasets/datasets/iris2.csv', features=True, label=True)
