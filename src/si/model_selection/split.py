@@ -3,37 +3,32 @@ from si.data.dataset import Dataset
 from typing import Tuple
 
 
-def train_test_split(dataset, test_size: float = 0.2, random_state=None) -> Tuple:
+def train_test_split(dataset: Dataset, test_size: float = 0.2, random_state=None) -> Tuple:
     """Splits the dataset into train and test sets, returning a tuple with train and test sets."""
 
-    # set the seed for the random number generator
-    if random_state is not None:
-        np.random.seed(random_state)
+    # seed for the random number generator
+    np.random.seed(random_state)
 
-    # get dataset size
-    n_samples = dataset.shape()[0]  # n_samples é o número de amostras do dataset
+    # size of the test set
+    n_samples = dataset.shape()[0]  # number of samples is the number of rows of the dataset
+    split_div = int(n_samples * test_size)  # number of samples in the test set is the number of samples times the test
+    # size
 
-    # get number of samples in the test set
-    n_test_samples = int(n_samples * test_size)  # n_test_samples é o número de amostras do dataset de teste
+    # get the dataset permutations
+    permutations = np.random.permutation(n_samples)  # get a permutation of the number of samples
 
-    # get dataset permutation
-    permutation = np.random.permutation(n_samples)  # permutation é um array com os índices das amostras do dataset
+    # get the test and train sets
+    test_idx = permutations[:split_div]  # get the first split_div samples of the permutation
+    train_idx = permutations[split_div:]  # get the remaining samples of the permutation
 
-    # get indexes of the test set
-    test_indexes = permutation[:n_test_samples]  # test_indexes é um array com os índices das amostras do dataset de
-    # teste
+    # get the training and testing datasets
+    train = Dataset(dataset.X[train_idx], dataset.y[train_idx], features=dataset.features,
+                    label=dataset.label)
 
-    # get indexes of the train set
-    train_indexes = permutation[n_test_samples:]  # train_indexes é um array com os índices das amostras do dataset de
-    # treino
+    test = Dataset(dataset.X[test_idx], dataset.y[test_idx], features=dataset.features,
+                   label=dataset.label)
 
-    # create train and test sets it is giving me error of NoneType in the next line
-    train_set = Dataset(X=dataset.X[train_indexes], y=dataset.y[train_indexes], features=dataset.features,
-                        label=dataset.label)
-    test_set = Dataset(X=dataset.X[test_indexes], y=dataset.y[test_indexes], features=dataset.features,
-                       label=dataset.label)
-
-    return train_set, test_set
+    return train, test
 
 
 # testing the function
