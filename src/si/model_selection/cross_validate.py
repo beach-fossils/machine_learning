@@ -4,13 +4,11 @@ import numpy as np
 from si.data.dataset import Dataset
 from si.model_selection.split import train_test_split
 
-
 Num = Union[int, float]
 
 
-def cross_validate(model, dataset: Dataset, scoring: Callable,
+def cross_validate(model, dataset: Dataset, scoring: Callable = None,
                    cv: int = 3, test_size: float = 0.3) -> Dict[str, List[Num]]:
-
     scores = {'seed': [], 'train': [], 'test': [], 'parameters': []}
 
     # calculates the score for each fold
@@ -23,7 +21,7 @@ def cross_validate(model, dataset: Dataset, scoring: Callable,
         scores['seed'].append(seed)
 
         # split the dataset
-        train, test = train_test_split(dataset, test_size=test_size, random_state=random_state)
+        train, test = train_test_split(dataset=dataset, test_size=test_size, random_state=random_state)
 
         # train the model
         model.fit(train)
@@ -48,19 +46,3 @@ def cross_validate(model, dataset: Dataset, scoring: Callable,
             scores['test'].append(scoring(y_test, model.predict(test)))
 
     return scores
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
