@@ -3,7 +3,7 @@ from si.data.dataset import Dataset
 from typing import Tuple
 
 
-def train_test_split(dataset: Dataset, test_size: float = 0.2, random_state=None) -> Tuple:
+def train_test_split(dataset: Dataset, test_size: float = 0.2, random_state: int = 0) -> Tuple[Dataset, Dataset]:
     """Splits the dataset into train and test sets, returning a tuple with train and test sets."""
 
     # seed for the random number generator
@@ -15,18 +15,15 @@ def train_test_split(dataset: Dataset, test_size: float = 0.2, random_state=None
     # size
 
     # get the dataset permutations
-    permutations = np.random.permutation(n_samples)  # get a permutation of the number of samples
+    permutations = np.random.permutation(n_samples)
 
     # get the test and train sets
-    test_idx = permutations[:split_div]  # get the first split_div samples of the permutation
-    train_idx = permutations[split_div:]  # get the remaining samples of the permutation
+    test_indices = permutations[:split_div]
+    train_indices = permutations[split_div:]
 
-    # get the training and testing datasets
-    train = Dataset(dataset.X[train_idx], dataset.y[train_idx], features=dataset.features,
-                    label=dataset.label)
-
-    test = Dataset(dataset.X[test_idx], dataset.y[test_idx], features=dataset.features,
-                   label=dataset.label)
+    # train set
+    train = Dataset(dataset.X[train_indices], dataset.y[train_indices], features=dataset.features, label=dataset.label)
+    test = Dataset(dataset.X[test_indices], dataset.y[test_indices], features=dataset.features, label=dataset.label)
 
     return train, test
 
@@ -49,3 +46,5 @@ if __name__ == '__main__':
     # print the test set
     print(test_set.X)
     print(test_set.y)
+
+
