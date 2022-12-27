@@ -50,19 +50,22 @@ class LogisticRegression:
             # updates the cost history
             self.cost_history[i] = cost
 
-            # prints the cost function
-            print(f"Cost: {cost} at iteration {i}")
+            # prints the cost function at every 20 iterations
+            # if i % 100 == 0:
+            #     print("Iteration: {}, Cost: {}".format(i, cost))
 
-           # cost_history(i - 1) – cost_history(i) < 0.0001 : parar o algoritmo
+            # cost_history(i - 1) – cost_history(i) < 0.0001 : parar o algoritmo
+
+            # prints the first and last iterations
+            # if i == 0 or i == self.max_iter - 1:
+            #     print("Iteration: {}, Cost: {}".format(i, cost))
 
             if i > 0:
                 if self.cost_history[i - 1] - self.cost_history[i] < 0.0001:
                     break
 
         # plots the cost function history
-        self.cost_function_plot()
-
-
+        # self.cost_function_plot()
 
         # for i in range(self.max_iter):
         #     # predicted y
