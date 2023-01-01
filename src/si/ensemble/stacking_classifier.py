@@ -11,13 +11,20 @@ class StackingClassifier:
     def fit(self, dataset: Dataset):
         """ Trains all models"""
 
+        # trains all models
         for model in self.models:
             model.fit(dataset)
+
+        # trains the final model
+        predictions = []
+        for model in self.models:
+            predictions.append(model.predict(dataset))
+        self.final_model.fit(Dataset(dataset.X, np.array(predictions).T))
 
         return self
 
     def predict(self, dataset: Dataset) -> np.array:
-        """ Estimates the y using the trained models and final modelel"""
+        """ Estimates the y using the trained models and final model"""
 
         # gets the model predictions
         predictions = []
