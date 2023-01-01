@@ -11,17 +11,17 @@ class KNNClassifier:
         # dataset de treino)
         self.dataset = None  # armazena o dataset de treino
 
-    def fit(self, dataset):
+    def fit(self, dataset: Dataset):
         """Stores the train dataset."""
         self.dataset = dataset
+        return self
 
     def predict(self, dataset: Dataset) -> np.ndarray:
         """Estimates the class of each sample based on the k nearest neighbors and returns an array of estimated classes
         to the test dataset"""
-        return np.apply_along_axis(self._get_closest_label, axis=1, arr=dataset.X)  # np.apply_along_axis (aplica a
-        # função _get_closest_label ao longo do eixo 1 do array dataset.X (dataset de teste))
+        return np.apply_along_axis(self._get_closest_label, 1, dataset.X)
 
-    def _get_closest_label(self, sample: np.ndarray) -> Union[int, str]:
+    def _get_closest_label(self, sample: np.ndarray):
         """Returns the label of the closest neighbor to the sample."""
         # compute the distance between the sample and all the samples in dataset
         distances = self.distance(sample, self.dataset.X)
@@ -33,17 +33,16 @@ class KNNClassifier:
         knn_labels = self.dataset.y[indexes]
 
         labels, counts = np.unique(knn_labels, return_counts=True)  # np.unique retorna os valores únicos de um array e
-    # np.bincount conta o número de vezes que cada valor aparece no array
+        # np.bincount conta o número de vezes que cada valor aparece no array
 
         # get the index of the most frequent label
         maxfrequency = labels[np.argmax(counts)]  # np.argmax retorna o índice do maior valor de um array
 
         return maxfrequency
 
-
     def score(self, dataset):
         """Computes the accuracy between the real and predicted values."""
-        y_pred = self.predict(dataset) # y_pred é o array de classes estimadas
+        y_pred = self.predict(dataset)  # y_pred é o array de classes estimadas
         accuracy = dataset.y == y_pred  # accuracy é um array de 1's e 0's, onde 1 indica que a classe estimada é igual
         # à classe real e 0 indica que a classe estimada é diferente da classe real
         return np.sum(accuracy) / len(accuracy)  # soma os elementos do array accuracy que são 1 e divide pelo número
@@ -75,11 +74,3 @@ if __name__ == '__main__':
     accuracy = knn.score(test)
 
     print(f'Accuracy: {accuracy}')
-
-
-
-
-
-
-
-
