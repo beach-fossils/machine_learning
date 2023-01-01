@@ -2,7 +2,7 @@ import numpy as np
 
 
 def cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """Cross entropy loss function.
+    """Cross entropy loss function
 
     Parameters
     ----------
@@ -20,7 +20,7 @@ def cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
 
 
 def cross_entropy_prime(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """Cross entropy loss derivative.
+    """Cross entropy loss derivative
 
     Parameters
     ----------
