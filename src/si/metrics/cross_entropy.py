@@ -19,7 +19,7 @@ def cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
     return -np.sum(y_true * np.log(y_pred), axis=1)
 
 
-def cross_entropy_prime(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+def cross_entropy_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
     """Cross entropy loss derivative
 
     Parameters
